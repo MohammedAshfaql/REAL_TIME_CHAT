@@ -5,18 +5,18 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom"; // Correct usage
+import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
 const Login = () => {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState(""); // Initialize with empty string
-  const [password, setPassword] = useState(""); // Initialize with empty string
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
-  const navigate = useNavigate(); // Correct hook for navigation
-  const { setUser } = ChatState(); // Correct context usage
+  const navigate = useNavigate();
+  const { setUser } = ChatState();
 
   const handleClick = () => setShow(!show);
 
@@ -43,7 +43,7 @@ const Login = () => {
       };
 
       const { data } = await axios.post(
-        "https://deployapi-ub0q.onrender.com/api/user/login", // Update endpoint as required
+        "https://deployapi-ub0q.onrender.com/api/user/login",
         { email, password },
         config
       );
@@ -56,10 +56,10 @@ const Login = () => {
         position: "bottom",
       });
 
-      setUser(data); // Update user context
-      localStorage.setItem("userInfo", JSON.stringify(data)); // Save user data
+      setUser(data);
+      localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
-      navigate("/chats"); // Navigate to chats page
+      navigate("/chats");
     } catch (error) {
       toast({
         title: "Error Occurred!",
@@ -76,22 +76,30 @@ const Login = () => {
   return (
     <VStack spacing="10px">
       <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
+        <FormLabel color="black">Email Address</FormLabel>
         <Input
           value={email}
           type="email"
           placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
+          borderColor="black"
+          focusBorderColor="black"
+          color="black" // Set text color to black
+          _hover={{ borderColor: "black" }} // Keep border black on hover
         />
       </FormControl>
       <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
+        <FormLabel color="black">Password</FormLabel>
         <InputGroup size="md">
           <Input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type={show ? "text" : "password"}
             placeholder="Enter password"
+            borderColor="black"
+            focusBorderColor="black"
+            color="black" // Set text color to black
+            _hover={{ borderColor: "black" }} // Keep border black on hover
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -109,7 +117,6 @@ const Login = () => {
       >
         Login
       </Button>
-      
     </VStack>
   );
 };

@@ -21,7 +21,7 @@ import UserListItem from "../userAvatar/UserListItem";
 
 const GroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [groupChatName, setGroupChatName] = useState();
+  const [groupChatName, setGroupChatName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -79,7 +79,7 @@ const GroupChatModal = ({ children }) => {
   };
 
   const handleSubmit = async () => {
-    if (!groupChatName || !selectedUsers) {
+    if (!groupChatName || !selectedUsers.length) {
       toast({
         title: "Please fill all the fields",
         status: "warning",
@@ -137,7 +137,6 @@ const GroupChatModal = ({ children }) => {
             fontFamily="Work sans"
             d="flex"
             justifyContent="center"
-            
             bgGradient="linear(to-r, #667BC6, #4D74A1)"
             color="white"
             borderTopRadius="md"
@@ -146,32 +145,38 @@ const GroupChatModal = ({ children }) => {
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody d="flex" flexDir="column" alignItems="center" maxH="300px" overflowY="auto">
+            
+            {/* Group Chat Name Input */}
             <FormControl mb={3}>
               <Input
                 placeholder="Chat Name"
                 mb={3}
                 onChange={(e) => setGroupChatName(e.target.value)}
-                bg="gray.100"
-                borderColor="gray.300"
-                _focus={{
-                  borderColor: "#667BC6",
-                  bg: "white",
-                }}
+                bg="white"
+                color="black"
+                borderColor="black"
+                _hover={{ borderColor: "black" }}
+                _focus={{ borderColor: "black", bg: "white", color: "black" }}
+                _placeholder={{ color: "gray.500" }} // Light gray placeholder
               />
             </FormControl>
+
+            {/* Search Users Input */}
             <FormControl mb={3}>
               <Input
                 placeholder="Add Users eg: John, Piyush, Jane"
                 mb={3}
                 onChange={(e) => handleSearch(e.target.value)}
-                bg="gray.100"
-                borderColor="gray.300"
-                _focus={{
-                  borderColor: "#667BC6",
-                  bg: "white",
-                }}
+                bg="white"
+                color="black"
+                borderColor="black"
+                _hover={{ borderColor: "black" }}
+                _focus={{ borderColor: "black", bg: "white", color: "black" }}
+                _placeholder={{ color: "gray.500" }} // Light gray placeholder
               />
             </FormControl>
+
+            {/* Selected Users List */}
             <Box w="100%" d="flex" flexWrap="wrap" mb={3}>
               {selectedUsers.map((u) => (
                 <UserBadgeItem
@@ -181,8 +186,10 @@ const GroupChatModal = ({ children }) => {
                 />
               ))}
             </Box>
+
+            {/* Search Results */}
             {loading ? (
-              <div>Loading...</div> // You can replace this with your ChatLoading component
+              <div>Loading...</div>
             ) : (
               searchResult
                 ?.slice(0, 4)
@@ -195,15 +202,14 @@ const GroupChatModal = ({ children }) => {
                 ))
             )}
           </ModalBody>
+
           <ModalFooter d="flex" justifyContent="center">
             <Button
               onClick={handleSubmit}
               colorScheme="blue"
               bg="#667BC6"
               color="white"
-              _hover={{
-                bg: "#3F5B86", // Changed hover color to a darker shade of blue
-              }}
+              _hover={{ bg: "#3F5B86" }}
             >
               Create Chat
             </Button>

@@ -5,19 +5,18 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";  // Corrected import from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
-  
-  const navigate = useNavigate();  // Correct usage of useNavigate
+  const navigate = useNavigate();
 
-  const [name, setName] = useState("");  // Initialize with an empty string
-  const [email, setEmail] = useState("");  // Initialize with an empty string
-  const [confirmpassword, setConfirmpassword] = useState("");  // Initialize with an empty string
-  const [password, setPassword] = useState("");  // Initialize with an empty string
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmpassword, setConfirmpassword] = useState("");
   const [pic, setPic] = useState("");
   const [picLoading, setPicLoading] = useState(false);
 
@@ -25,7 +24,7 @@ const Signup = () => {
     setPicLoading(true);
     if (!name || !email || !password || !confirmpassword) {
       toast({
-        title: "Please Fill all the Fields",
+        title: "Please fill all the fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -34,34 +33,36 @@ const Signup = () => {
       setPicLoading(false);
       return;
     }
+
     if (password !== confirmpassword) {
       toast({
-        title: "Passwords Do Not Match",
+        title: "Passwords do not match",
         status: "warning",
         duration: 5000,
         isClosable: true,
         position: "bottom",
       });
+      setPicLoading(false);
       return;
     }
-    console.log(name, email, password, pic);
+
     try {
       const config = {
         headers: {
           "Content-type": "application/json",
         },
       };
+
+      // If no profile image is uploaded, use a default image
+      const defaultPic =
+        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+
       const { data } = await axios.post(
         "https://deployapi-ub0q.onrender.com/api/user",
-        {
-          name,
-          email,
-          password,
-          pic,
-        },
+        { name, email, password, pic: pic || defaultPic }, // Use defaultPic if pic is empty
         config
       );
-      console.log(data);
+
       toast({
         title: "Registration Successful",
         status: "success",
@@ -69,13 +70,14 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
-      navigate("/chats");  // Corrected use of navigate
+      navigate("/chats");
     } catch (error) {
       toast({
         title: "Error Occurred!",
-        description: error.response.data.message,
+        description: error.response?.data?.message || "Something went wrong",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -87,22 +89,17 @@ const Signup = () => {
 
   const postDetails = (pics) => {
     setPicLoading(true);
-    if (pics === undefined) {
-      toast({
-        title: "Please Select an Image!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+    if (!pics) {
+      setPicLoading(false); // Stop loading if no image is selected
       return;
     }
-    console.log(pics);
+
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
       data.append("upload_preset", "chat-app");
       data.append("cloud_name", "piyushproj");
+
       fetch("https://api.cloudinary.com/v1_1/piyushproj/image/upload", {
         method: "post",
         body: data,
@@ -110,50 +107,68 @@ const Signup = () => {
         .then((res) => res.json())
         .then((data) => {
           setPic(data.url.toString());
-          console.log(data.url.toString());
           setPicLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          toast({
+            title: "Error uploading image",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
           setPicLoading(false);
         });
     } else {
       toast({
-        title: "Please Select a Valid Image!",
+        title: "Please select a valid image (JPEG/PNG)",
         status: "warning",
         duration: 5000,
         isClosable: true,
         position: "bottom",
       });
       setPicLoading(false);
-      return;
     }
   };
 
   return (
     <VStack spacing="5px">
       <FormControl id="first-name" isRequired>
-        <FormLabel>Name</FormLabel>
+        <FormLabel color="black">Name</FormLabel>
         <Input
           placeholder="Enter Your Name"
           onChange={(e) => setName(e.target.value)}
+          borderColor="black"
+          focusBorderColor="black"
+          color="black"
+          _hover={{ borderColor: "black" }}
         />
       </FormControl>
-      <FormControl id="emails" isRequired>
-        <FormLabel>Email Address</FormLabel>
+
+      <FormControl id="email" isRequired>
+        <FormLabel color="black">Email Address</FormLabel>
         <Input
           type="email"
           placeholder="Enter Your Email Address"
           onChange={(e) => setEmail(e.target.value)}
+          borderColor="black"
+          focusBorderColor="black"
+          color="black"
+          _hover={{ borderColor: "black" }}
         />
       </FormControl>
-      <FormControl id="passwords" isRequired>
-        <FormLabel>Password</FormLabel>
+
+      <FormControl id="password" isRequired>
+        <FormLabel color="black">Password</FormLabel>
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
             placeholder="Enter Password"
             onChange={(e) => setPassword(e.target.value)}
+            borderColor="black"
+            focusBorderColor="black"
+            color="black"
+            _hover={{ borderColor: "black" }}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -162,13 +177,18 @@ const Signup = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id="confirm-password" isRequired>  {/* Corrected id */}
-        <FormLabel>Confirm Password</FormLabel>
+
+      <FormControl id="confirm-password" isRequired>
+        <FormLabel color="black">Confirm Password</FormLabel>
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Confirm password"
+            placeholder="Confirm Password"
             onChange={(e) => setConfirmpassword(e.target.value)}
+            borderColor="black"
+            focusBorderColor="black"
+            color="black"
+            _hover={{ borderColor: "black" }}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -177,15 +197,22 @@ const Signup = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
+
+      {/* Profile Picture (Optional) */}
       <FormControl id="pic">
-        <FormLabel>Upload your Picture</FormLabel>
+        <FormLabel color="black">Upload Your Picture (Optional)</FormLabel>
         <Input
           type="file"
           p={1.5}
           accept="image/*"
           onChange={(e) => postDetails(e.target.files[0])}
+          borderColor="black"
+          focusBorderColor="black"
+          color="black"
+          _hover={{ borderColor: "black" }}
         />
       </FormControl>
+
       <Button
         colorScheme="blue"
         width="100%"
